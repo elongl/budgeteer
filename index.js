@@ -1,4 +1,7 @@
 import { CompanyTypes, createScraper } from "israeli-bank-scrapers";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const main = async () => {
   const now = new Date();

@@ -10,4 +10,3 @@ CREDENTIALS_ID=<user identification number>
 CREDENTIALS_CARD_DIGITS=<last 6 digits of card>
 CREDENTIALS_PASSWORD=<password>
 ```
-
