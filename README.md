@@ -9,7 +9,7 @@ _Note_: This program is currently only compatible with Isracard.
 
 ```bash
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-PUPPETEER_EXECUTABLE_PATH=<chromium path>
+PUPPETEER_EXECUTABLE_PATH=<chrome path>
 
 CREDENTIALS_ID=<user identification number>
 CREDENTIALS_CARD_DIGITS=<last 6 digits of card>
