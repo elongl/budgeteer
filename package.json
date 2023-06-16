@@ -2,11 +2,12 @@
   "name": "budget-notifier",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
+  "description": "Set a credit card budget and get notified if you exceed it.",
   "main": "index.js",
-  "scripts": {},
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Elon Gliksberg",
   "dependencies": {
     "dotenv": "^16.2.0",
     "israeli-bank-scrapers": "^3.10.2"
