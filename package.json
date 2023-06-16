@@ -1,0 +1,14 @@
+{
+  "name": "budget-notifier",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.2.0",
+    "israeli-bank-scrapers": "^3.10.2"
+  }
+}
