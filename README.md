@@ -15,6 +15,9 @@ CREDENTIALS_ID=<user identification number>
 CREDENTIALS_CARD_DIGITS=<last 6 digits of card>
 CREDENTIALS_PASSWORD=<password>
 
+TELEGRAM_BOT_TOKEN=<telegram bot token>
+TELEGRAM_CHAT_ID=<telegram chat id>
+
 BUDGET_ILS=<budget in ILS>
 ```
 

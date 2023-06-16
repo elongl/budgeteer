@@ -1,5 +1,6 @@
 import { CompanyTypes, createScraper } from "israeli-bank-scrapers";
 import dotenv from "dotenv";
+import TelegramBot from "node-telegram-bot-api";
 
 dotenv.config();
 
@@ -48,14 +49,20 @@ const getTotalCharged = (scrapeResult) => {
   return totalCharged;
 };
 
+const sendTelegramMessage = (message) => {
+  const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN);
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  bot.sendMessage(chatId, message);
+};
+
 const main = async () => {
   const budget = parseBudget();
   const scrapeResult = await scrape();
   const totalCharged = getTotalCharged(scrapeResult);
   if (totalCharged > budget) {
-    console.log(`Budget exceeded: ${totalCharged}`);
+    sendTelegramMessage(`Budget exceeded: ${totalCharged} > ${budget}`);
   } else {
-    console.log(`Total charged: ${totalCharged}`);
+    sendTelegramMessage(`Budget not exceeded: ${totalCharged} <= ${budget}`);
   }
 };
 
