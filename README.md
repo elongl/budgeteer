@@ -1,6 +1,6 @@
 # Budgeteer
 
-A simple program that notifies you when you exceed your budget.
+A simple program that notifies you when you exceed your budget.  
 _Note_: This program is currently only compatible with Isracard.
 
 ## Setup
