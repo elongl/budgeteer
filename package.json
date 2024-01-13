@@ -1,0 +1,17 @@
+{
+  "name": "budgeteer",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Set a budget and get notified if you exceed it.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Elon Gliksberg",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.2.0",
+    "israeli-bank-scrapers": "^3.10.2",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
