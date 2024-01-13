@@ -56,11 +56,11 @@ const main = async () => {
   const totalCharged = getTotalCharged(scrapeResult);
   const destinations = process.env.DESTINATIONS.split(",");
   let message;
-  const persantage = Math.round((totalCharged / budget) * 100);
+  const exceed_percent = Math.round((totalCharged / budget) * 100);
   if (totalCharged > budget) {
-    message = `Budget exceeded: ${totalCharged} > ${budget} (${persantage}%)`;
+    message = `Budget exceeded: ${totalCharged} > ${budget} (${exceed_percent}%)`;
   } else {
-    message = `Budget not exceeded: ${totalCharged} <= ${budget} (${persantage}%)`;
+    message = `Budget not exceeded: ${totalCharged} <= ${budget} (${exceed_percent}%)`;
   }
 
   destinations.forEach((dest) => {
