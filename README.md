@@ -15,13 +15,25 @@ CREDENTIALS_ID=<user identification number>
 CREDENTIALS_CARD_DIGITS=<last 6 digits of card>
 CREDENTIALS_PASSWORD=<password>
 
+BUDGET_ILS=<budget in ILS>
+
+DESTINATIONS=<comma deperated list if uppercase destinations>
+
 TELEGRAM_BOT_TOKEN=<telegram bot token>
 TELEGRAM_CHAT_ID=<telegram chat id>
 
-BUDGET_ILS=<budget in ILS>
+DISCORD_BOT_TOKEN=<discord bot token>
+DISCORD_CHANNEL_ID=<discord channel id>
 ```
 
-2. Install the package
+2. Supported Destinatons
+
+```
+TELEGRAM
+DISCORD
+```
+
+3. Install the package
 
 ```bash
 npm install
