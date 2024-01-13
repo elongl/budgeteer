@@ -1,6 +1,7 @@
 import { CompanyTypes, createScraper } from "israeli-bank-scrapers";
+import { sendTelegramMessage } from "./destinations/telegram.js";
+import { sendDiscordMessage } from "./destinations/discord.js";
 import dotenv from "dotenv";
-import TelegramBot from "node-telegram-bot-api";
 
 dotenv.config();
 
@@ -46,24 +47,29 @@ const getTotalCharged = (scrapeResult) => {
       totalCharged -= txn.chargedAmount;
     });
   });
-  return totalCharged;
-};
-
-const sendTelegramMessage = (message) => {
-  const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN);
-  const chatId = process.env.TELEGRAM_CHAT_ID;
-  bot.sendMessage(chatId, message);
+  return Math.round(totalCharged * 100) / 100;
 };
 
 const main = async () => {
   const budget = parseBudget();
   const scrapeResult = await scrape();
   const totalCharged = getTotalCharged(scrapeResult);
+  const destinations = process.env.DESTINATIONS.split(",");
+  let message;
+  const exceed_percent = Math.round((totalCharged / budget) * 100);
   if (totalCharged > budget) {
-    sendTelegramMessage(`Budget exceeded: ${totalCharged} > ${budget}`);
+    message = `Budget exceeded: ${totalCharged} > ${budget} (${exceed_percent}%)`;
   } else {
-    sendTelegramMessage(`Budget not exceeded: ${totalCharged} <= ${budget}`);
+    message = `Budget not exceeded: ${totalCharged} <= ${budget} (${exceed_percent}%)`;
   }
+
+  destinations.forEach((dest) => {
+    if (dest === "TELEGRAM") {
+      sendTelegramMessage(message);
+    } else if (dest === "DISCORD") {
+      sendDiscordMessage(message);
+    }
+  });
 };
 
 main();
