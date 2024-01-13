@@ -24,7 +24,7 @@ CREDENTIALS_PASSWORD=<password>
 
 BUDGET_ILS=<budget in ILS>
 
-DESTINATIONS=<comma deperated list if uppercase destinations>
+DESTINATIONS=<comma deperated list of uppercase destinations>
 
 TELEGRAM_BOT_TOKEN=<telegram bot token>
 TELEGRAM_CHAT_ID=<telegram chat id>
