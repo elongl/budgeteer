@@ -1,6 +1,6 @@
 import { CompanyTypes, createScraper } from "israeli-bank-scrapers";
-import { sendTelegramMessage } from "./telegram.js";
-import { sendDiscordMessage } from "./discord.js";
+import { sendTelegramMessage } from "./destinations/telegram.js";
+import { sendDiscordMessage } from "./destinations/discord.js";
 import dotenv from "dotenv";
 
 dotenv.config();
