@@ -25,6 +25,7 @@ CREDENTIALS_PASSWORD=<password>
 BUDGET_ILS=<budget in ILS>
 
 DESTINATIONS=<comma deperated list of uppercase destinations>
+MONTHS_BACK=<number of previous months to calculate the budget>
 
 TELEGRAM_BOT_TOKEN=<telegram bot token>
 TELEGRAM_CHAT_ID=<telegram chat id>
