@@ -17,7 +17,7 @@ const scrape = async () => {
   const now = new Date();
   const options = {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    startDate: date,
     companyId: CompanyTypes.isracard,
     showBrowser: false,
   };
@@ -40,29 +40,86 @@ const scrape = async () => {
 };
 
 const getTotalCharged = (scrapeResult) => {
-  let totalCharged = 0;
+  let totalCharged = {};
+  let monthYearTuple = "";
+  
   scrapeResult.accounts.forEach((account) => {
     account.txns.forEach((txn) => {
+      monthYearTuple = getMonthYearTupleOfADay(new Date(txn.date));
+      if (!(monthYearTuple in totalCharged)) {
+        totalCharged[monthYearTuple] = 0
+      }
+      
       // The charge amount is negative.
-      totalCharged -= txn.chargedAmount;
+      totalCharged[monthYearTuple] -= txn.chargedAmount;
     });
   });
-  return Math.round(totalCharged * 100) / 100;
+
+  Object.keys(totalCharged).forEach(monthYear => {
+    totalCharged[monthYear] = Math.round(totalCharged[monthYear] * 100) / 100;
+  });
+  
+  return totalCharged
 };
 
+const getPreviousMonthDate = (numberOfMonthsBack) => {
+    let oreviousMonthDate = new Date();
+    previousMonthDate.setDate(1);
+    for (let index = 0; index < numberOfMonthsBack; index++) {
+        previousMonthDate.setDate(0);
+        previousMonthDate.setDate(1);
+    }
+    return previousMonthDate;
+}
+
+const createMessageForCurrentMonth = (currentMonthCharges, budget) => {
+  let message;
+  const exceed_percent = Math.round((currentMonthCharges / budget) * 100);
+  
+  if (currentMonthCharges > budget) ) {
+    message = `Current month budget exceeded: ${currentMonthCharges} > ${budget} (${exceed_percent}%)`;
+  } else {
+    message = `Current month budget not exceeded: ${currentMonthCharges} <= ${budget} (${exceed_percent}%)`;
+  }
+  
+  return message;
+}
+
+const createMessageForPreviousMonths = (previousCharges, budget) => {
+  let message;
+  const totalCharges = previousCharges.reduce((partialSum, a) => partialSum + a, 0);
+  const exceed_percent = Math.round((totalCharged / budget) * 100);
+  
+  if (totalCharges > budget * (previousCharges.length) ) {
+    message = `Over the last ${previousCharges.length} months budget exceeded: ${totalCharged} > ${budget} (${exceed_percent}%)`;
+  } else {
+    message = `Over the last ${previousCharges.length} budget not exceeded: ${totalCharged} <= ${budget} (${exceed_percent}%)`;
+  }
+  
+  return message;
+}
+
+const getMonthYearTupleOfADay = (day) => {
+  monthYearTuple = `${day.toLocaleString("en-US", {month:"short"})}-${day.getFullYear()}`
+}
+
 const main = async () => {
+  let message;
+  const monthsBack = process.env.MONTHS_BACK ? Number(process.env.MONTHS_BACK) : 0;
   const budget = parseBudget();
-  const scrapeResult = await scrape();
+  const scrapeResult = await scrape(getPreviousMonthDate(monthsBack));
   const totalCharged = getTotalCharged(scrapeResult);
   const destinations = process.env.DESTINATIONS.split(",");
-  let message;
-  const exceed_percent = Math.round((totalCharged / budget) * 100);
-  if (totalCharged > budget) {
-    message = `Budget exceeded: ${totalCharged} > ${budget} (${exceed_percent}%)`;
+
+  const todayMonthYearTuple = getMonthYearTupleOfADay(now)
+  if (todayMonthYearTuple in totalCharged) {
+    message = `${createMessageForCurrentMonth(totalCharged[todayMonthYearTuple], budget)}\n`
   } else {
-    message = `Budget not exceeded: ${totalCharged} <= ${budget} (${exceed_percent}%)`;
+    message = "There are no charges for this month yet :) \n"
   }
 
+  message += monthsBack ? createMessageForPreviousMonths(Object.keys(totalCharged), budget) : ""
+  
   destinations.forEach((dest) => {
     if (dest === "TELEGRAM") {
       sendTelegramMessage(message);
