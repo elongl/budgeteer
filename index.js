@@ -13,11 +13,10 @@ const parseBudget = () => {
   return budget;
 };
 
-const scrape = async () => {
-  const now = new Date();
+const scrape = async (startDate) => {
   const options = {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    startDate: date,
+    startDate,
     companyId: CompanyTypes.isracard,
     showBrowser: false,
   };
