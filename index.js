@@ -63,7 +63,7 @@ const getTotalCharged = (scrapeResult) => {
 };
 
 const getPreviousMonthDate = (numberOfMonthsBack) => {
-    let oreviousMonthDate = new Date();
+    let previousMonthDate = new Date();
     previousMonthDate.setDate(1);
     for (let index = 0; index < numberOfMonthsBack; index++) {
         previousMonthDate.setDate(0);
@@ -76,7 +76,7 @@ const createMessageForCurrentMonth = (currentMonthCharges, budget) => {
   let message;
   const exceed_percent = Math.round((currentMonthCharges / budget) * 100);
   
-  if (currentMonthCharges > budget) ) {
+  if (currentMonthCharges > budget) {
     message = `Current month budget exceeded: ${currentMonthCharges} > ${budget} (${exceed_percent}%)`;
   } else {
     message = `Current month budget not exceeded: ${currentMonthCharges} <= ${budget} (${exceed_percent}%)`;
