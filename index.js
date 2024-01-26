@@ -13,11 +13,10 @@ const parseBudget = () => {
   return budget;
 };
 
-const scrape = async () => {
-  const now = new Date();
+const scrape = async (startDate) => {
   const options = {
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    startDate,
     companyId: CompanyTypes.isracard,
     showBrowser: false,
   };
@@ -39,37 +38,92 @@ const scrape = async () => {
   return scrapeResult;
 };
 
-const getTotalCharged = (scrapeResult) => {
-  let totalCharged = 0;
+const initMonths = (startDate) => {
+  const now = new Date();
+  const months = {};
+  while (startDate <= now) {
+    months[getMonthKey(startDate)] = 0;
+    startDate.setMonth(startDate.getMonth() + 1);
+  }
+  return months;
+};
+
+const getChargePerMonth = (scrapeResult, startDate) => {
+  const chargePerMonth = initMonths(startDate);
   scrapeResult.accounts.forEach((account) => {
-    account.txns.forEach((txn) => {
+    account.txns.forEach((transaction) => {
+      const monthKey = getMonthKey(new Date(transaction.date));
       // The charge amount is negative.
-      totalCharged -= txn.chargedAmount;
+      chargePerMonth[monthKey] -= transaction.chargedAmount;
     });
   });
-  return Math.round(totalCharged * 100) / 100;
+
+  return chargePerMonth;
+};
+
+const getStartDate = (monthsBack) => {
+  const previousMonthDate = new Date();
+  previousMonthDate.setDate(1);
+  for (let index = 0; index < monthsBack; index++) {
+    previousMonthDate.setDate(0);
+    previousMonthDate.setDate(1);
+  }
+  return previousMonthDate;
+};
+
+const getMonthKey = (day) =>
+  `${day.toLocaleString("en-US", { month: "short" })}-${day.getFullYear()}`;
+
+const getCurrentMonthKey = () => getMonthKey(new Date());
+
+const getDebtFromPrevMonths = (chargePerMonth, budget) => {
+  const currentMonth = getCurrentMonthKey();
+  const prevMonthsWithDebt = Object.entries(chargePerMonth).filter(
+    ([month, charge]) => month != currentMonth && charge > budget
+  );
+  return prevMonthsWithDebt.reduce(
+    (acc, [, charge]) => acc + (charge - budget),
+    0
+  );
+};
+
+const sendMsg = (message) => {
+  const dest_handler_map = {
+    telegram: sendTelegramMessage,
+    discord: sendDiscordMessage,
+  };
+  const dests = process.env.DESTINATIONS.split(",");
+  dests.forEach((dest) => {
+    const resolved_dest = dest_handler_map[dest.toLocaleLowerCase()];
+    if (resolved_dest) {
+      resolved_dest(message);
+    } else {
+      console.error(`Destination '${dest}' is not supported.`);
+    }
+  });
 };
 
 const main = async () => {
+  const monthsBack = process.env.MONTHS_BACK
+    ? Number(process.env.MONTHS_BACK)
+    : 0;
+  const startDate = getStartDate(monthsBack);
   const budget = parseBudget();
-  const scrapeResult = await scrape();
-  const totalCharged = getTotalCharged(scrapeResult);
-  const destinations = process.env.DESTINATIONS.split(",");
-  let message;
-  const exceed_percent = Math.round((totalCharged / budget) * 100);
-  if (totalCharged > budget) {
-    message = `Budget exceeded: ${totalCharged} > ${budget} (${exceed_percent}%)`;
-  } else {
-    message = `Budget not exceeded: ${totalCharged} <= ${budget} (${exceed_percent}%)`;
-  }
+  const scrapeResult = await scrape(startDate);
+  const chargePerMonth = getChargePerMonth(scrapeResult, startDate);
+  const currentCharge = chargePerMonth[getCurrentMonthKey()];
+  const debtFromPreviousMonths = getDebtFromPrevMonths(chargePerMonth, budget);
+  const cashAvailableThisMonth =
+    budget - currentCharge - debtFromPreviousMonths;
 
-  destinations.forEach((dest) => {
-    if (dest === "TELEGRAM") {
-      sendTelegramMessage(message);
-    } else if (dest === "DISCORD") {
-      sendDiscordMessage(message);
-    }
-  });
+  const msg = `
+  Budget: ₪${budget.toFixed(2)}
+  Current month's charge: ₪${currentCharge.toFixed(2)}
+  Debt from previous months: ₪${debtFromPreviousMonths.toFixed(2)}
+  Cash available to spend this month: ₪${cashAvailableThisMonth.toFixed(2)}
+  `;
+
+  sendMsg(msg);
 };
 
 main();
