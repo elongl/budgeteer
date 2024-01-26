@@ -1,14 +1,6 @@
 # Budgeteer
 
-A simple program that notifies you when you exceed your budget.  
-_Note_: This program is currently only compatible with Isracard.
-
-Supported Destinatons
-
-```
-TELEGRAM
-DISCORD
-```
+A simple tool to help you track your budget.
 
 ## Setup
 
@@ -24,7 +16,7 @@ CREDENTIALS_PASSWORD=<password>
 
 BUDGET_ILS=<budget in ILS>
 
-DESTINATIONS=<comma deperated list of uppercase destinations>
+DESTINATIONS=<comma separated list of destinations (discord/telegram)>
 MONTHS_BACK=<number of previous months to calculate the budget>
 
 TELEGRAM_BOT_TOKEN=<telegram bot token>
