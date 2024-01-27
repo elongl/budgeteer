@@ -104,26 +104,34 @@ const sendMsg = (message) => {
 };
 
 const main = async () => {
-  const monthsBack = process.env.MONTHS_BACK
-    ? Number(process.env.MONTHS_BACK)
-    : 0;
-  const startDate = getStartDate(monthsBack);
-  const budget = parseBudget();
-  const scrapeResult = await scrape(startDate);
-  const chargePerMonth = getChargePerMonth(scrapeResult, startDate);
-  const currentCharge = chargePerMonth[getCurrentMonthKey()];
-  const debtFromPreviousMonths = getDebtFromPrevMonths(chargePerMonth, budget);
-  const cashAvailableThisMonth =
-    budget - currentCharge - debtFromPreviousMonths;
+  try {
+    const monthsBack = process.env.MONTHS_BACK
+      ? Number(process.env.MONTHS_BACK)
+      : 0;
+    const startDate = getStartDate(monthsBack);
+    const budget = parseBudget();
+    const scrapeResult = await scrape(startDate);
+    const chargePerMonth = getChargePerMonth(scrapeResult, startDate);
+    const currentCharge = chargePerMonth[getCurrentMonthKey()];
+    const debtFromPreviousMonths = getDebtFromPrevMonths(
+      chargePerMonth,
+      budget
+    );
+    const cashAvailableThisMonth =
+      budget - currentCharge - debtFromPreviousMonths;
 
-  const msg = `
+    const msg = `
   Budget: ₪${budget.toFixed(2)}
   Current month's charge: ₪${currentCharge.toFixed(2)}
   Debt from previous months: ₪${debtFromPreviousMonths.toFixed(2)}
   Cash available to spend this month: ₪${cashAvailableThisMonth.toFixed(2)}
   `;
-
-  sendMsg(msg);
+    sendMsg(msg);
+  } catch (err) {
+    const errMsg = `Error: ${err.message}`;
+    console.error(errMsg);
+    sendMsg(errMsg);
+  }
 };
 
 main();
