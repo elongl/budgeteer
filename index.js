@@ -120,12 +120,14 @@ const main = async () => {
     const cashAvailableThisMonth =
       budget - currentCharge - debtFromPreviousMonths;
 
-    const msg = `
-  Budget: ₪${budget.toFixed(2)}
-  Current month's charge: ₪${currentCharge.toFixed(2)}
-  Debt from previous months: ₪${debtFromPreviousMonths.toFixed(2)}
-  Cash available to spend this month: ₪${cashAvailableThisMonth.toFixed(2)}
-  `;
+    const msg = [
+      `Budget: ₪${budget.toFixed(2)}`,
+      `Current month's charge: ₪${currentCharge.toFixed(2)}`,
+      `Debt from previous months: ₪${debtFromPreviousMonths.toFixed(2)}`,
+      `Cash available to spend this month: ₪${cashAvailableThisMonth.toFixed(
+        2
+      )}`,
+    ].join("\n");
     sendMsg(msg);
   } catch (err) {
     const errMsg = `Error: ${err.message}`;
